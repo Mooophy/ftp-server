@@ -11,3 +11,6 @@ LIBS += -lboost_regex
 
 SOURCES += \
     main.cpp
+
+HEADERS += \
+    users.hpp
