@@ -4,7 +4,7 @@
 
 int main()
 {
-    fs::Server servent{1234};
+    fs::Server server{1234};
     return 0;
 }
 

@@ -37,7 +37,7 @@ void session(Tcp::socket sock)
     }
     catch (std::exception& e)
     {
-        std::cerr << "Exception in thread: " << e.what() << "\n";
+        std::cerr << ">exception in thread: " << e.what() << "\n";
     }
 }
 
@@ -65,7 +65,7 @@ private:
             Tcp::socket soc(io_service_);
             acceptor_.accept(soc);
 
-            std::cout << "new session established" << std::endl;
+            std::cout << ">new session established" << std::endl;
             std::thread(session, std::move(soc)).detach();
         }
     }
