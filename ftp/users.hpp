@@ -10,7 +10,6 @@ namespace fs {
 
 /**
  * @brief The Users class
- *
  */
 class Users
 {
@@ -23,7 +22,7 @@ public:
      * @brief Ctor
      * @param filename
      */
-    Users(const std::string& filename):
+    explicit Users(const std::string& filename):
         data_{}
     {
         std::ifstream ifs{filename};

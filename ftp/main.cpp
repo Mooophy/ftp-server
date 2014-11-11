@@ -1,13 +1,10 @@
 #include <iostream>
 #include "users.hpp"
+#include "server.hpp"
 
 int main()
 {
-    fs::Users users{"users"};
-    users.print();
-
-    std::cout << users.check("alan","1234") << std::endl;
-
+    fs::Server servent{1234};
     return 0;
 }
 
