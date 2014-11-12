@@ -17,4 +17,5 @@ HEADERS += \
     users.hpp \
     server.hpp \
     session.hpp \
-    alias_for_boost.hpp
+    alias_for_boost.hpp \
+    command.hpp

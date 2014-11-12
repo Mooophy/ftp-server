@@ -20,7 +20,7 @@ void fs::Session::do_session()
 
             std::cout << ">from client : " << data << std::endl;
 
-            boost::asio::write(socket_, boost::asio::buffer(data, length));
+            write(socket_, boost::asio::buffer(data, length));
         }
     }
     catch (std::exception& e)

@@ -1,10 +1,9 @@
-#include "users.hpp"
-#include "server.hpp"
-
+#include <iostream>
+#include "command.hpp"
 int main()
 {
-    fs::Server server{1234};
-
+    fs::Command cmd{"SYST ba1234\r\n",13};
+    std::cout << cmd.code() << std::endl << cmd.argument() << std::endl;
     return 0;
 }
 
