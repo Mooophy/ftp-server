@@ -11,6 +11,7 @@ void fs::Server::run()
         acceptor_.accept(soc);
         std::cout << ">new session established" << std::endl;
 
-        std::thread{Session{}, std::move(soc)}.detach();
+        Session session{std::move(soc)};
+        std::thread{std::move(session)}.detach();
     }
 }

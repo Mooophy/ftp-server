@@ -10,7 +10,8 @@ LIBS += -lboost_system
 
 SOURCES += \
     main.cpp \
-    server.cpp
+    server.cpp \
+    session.cpp
 
 HEADERS += \
     users.hpp \

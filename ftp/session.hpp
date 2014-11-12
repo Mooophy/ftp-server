@@ -12,40 +12,21 @@ class Session
 {
 public:
 
-    Session():
-        all_users_{}
+    explicit Session(Tcp::socket soc):
+        all_users_{},
+        socket_{std::move(soc)}
     {}
 
-    void operator ()(Tcp::socket soc) const
+    void operator ()()
     {
-        using boost::asio::write;
-        try
-        {
-            while(true)
-            {
-                char data[MAX_LENGTH];
-
-                boost::system::error_code error;
-                size_t length = soc.read_some(boost::asio::buffer(data), error);
-
-                if (error == boost::asio::error::eof)
-                    break; // Connection closed cleanly by peer.
-                else if (error)
-                    throw boost::system::system_error(error); // Some other error.
-
-                std::cout << ">from client : " << data << std::endl;
-
-                boost::asio::write(soc, boost::asio::buffer(data, length));
-            }
-        }
-        catch (std::exception& e)
-        {
-            std::cerr << ">exception in thread: " << e.what() << "\n";
-        }
+        do_session();
     }
 
 private:
     fs::Users all_users_;
+    Tcp::socket socket_;
+
+    void do_session();
 };
 }//namespace
 
