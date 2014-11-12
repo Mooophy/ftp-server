@@ -1,7 +1,7 @@
 #ifndef SESSION_HPP
 #define SESSION_HPP
 
-#include "alias.hpp"
+#include "alias_for_boost.hpp"
 #include "users.hpp"
 
 namespace fs {

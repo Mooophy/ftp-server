@@ -1,7 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "alias.hpp"
+#include "alias_for_boost.hpp"
 
 namespace fs {
 

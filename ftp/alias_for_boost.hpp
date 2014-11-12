@@ -1,5 +1,5 @@
-#ifndef ALIAS_HPP
-#define ALIAS_HPP
+#ifndef ALIAS_FOR_BOOST_HPP
+#define ALIAS_FOR_BOOST_HPP
 
 #include <boost/asio.hpp>
 
@@ -11,4 +11,4 @@ using Io_service    =   boost::asio::io_service;
 
 }
 
-#endif // ALIAS_HPP
+#endif // ALIAS_FOR_BOOST_HPP
