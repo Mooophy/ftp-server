@@ -15,15 +15,16 @@ using Io_service    =   boost::asio::io_service;
 
 const int max_length = 1024;
 
-void session(Tcp::socket sock)
+void session(Tcp::socket soc)
 {
     try
     {
         while(true)
         {
             char data[max_length];
+
             boost::system::error_code error;
-            size_t length = sock.read_some(boost::asio::buffer(data), error);
+            size_t length = soc.read_some(boost::asio::buffer(data), error);
 
             if (error == boost::asio::error::eof)
                 break; // Connection closed cleanly by peer.
@@ -32,7 +33,7 @@ void session(Tcp::socket sock)
 
             std::cout << ">from client : " << data << std::endl;
 
-            boost::asio::write(sock, boost::asio::buffer(data, length));
+            boost::asio::write(soc, boost::asio::buffer(data, length));
         }
     }
     catch (std::exception& e)
