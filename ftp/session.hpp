@@ -3,6 +3,7 @@
 
 #include "alias_for_boost.hpp"
 #include "users.hpp"
+#include "command.hpp"
 
 namespace fs {
 
@@ -27,6 +28,8 @@ private:
     Tcp::socket socket_;
 
     void do_session();
+    Command read();
+
 };
 }//namespace
 

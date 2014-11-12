@@ -1,4 +1,5 @@
 #include "session.hpp"
+#include "command.hpp"
 
 void fs::Session::do_session()
 {
@@ -6,21 +7,21 @@ void fs::Session::do_session()
 
     try
     {
+        std::string reply{"220 welcome to Yue Wang's FTP site\r\n"};
+        write(socket_, boost::asio::buffer(reply));
+        std::string user{read().code()};
+        std::cout << user << std::endl;
+
+        while(1);
+
         while(true)
         {
-            char data[MAX_LENGTH];
+            auto cmd = read();
+            if(cmd.code() == "err") break;
 
-            boost::system::error_code error;
-            size_t length = socket_.read_some(boost::asio::buffer(data), error);
-
-            if (error == boost::asio::error::eof)
-                break; // Connection closed cleanly by peer.
-            else if (error)
-                throw boost::system::system_error(error); // Some other error.
-
-            std::cout << ">from client : " << data << std::endl;
-
-            write(socket_, boost::asio::buffer(data, length));
+            std::cout << ">from client : " << cmd << std::endl;
+            std::string reply{"210\r\n"};
+            write(socket_, boost::asio::buffer(reply, reply.size()));
         }
     }
     catch (std::exception& e)
@@ -29,3 +30,17 @@ void fs::Session::do_session()
     }
 }
 
+fs::Command fs::Session::read()
+{
+    char data[MAX_LENGTH];
+
+    boost::system::error_code error;
+    size_t length = socket_.read_some(boost::asio::buffer(data), error);
+
+    if (error == boost::asio::error::eof)
+        return Command{"err",3}; // Connection closed cleanly by peer.
+    else if (error)
+        throw boost::system::system_error(error); // Some other error.
+
+    return Command{data,length};
+}

@@ -1,9 +1,9 @@
-#include <iostream>
-#include "command.hpp"
+#include "server.hpp"
+
 int main()
 {
-    fs::Command cmd{"SYST ba1234\r\n",13};
-    std::cout << cmd;
+    fs::Server server{1234};
+
     return 0;
 }
 
