@@ -9,8 +9,11 @@ LIBS += -pthread
 LIBS += -lboost_system
 
 SOURCES += \
-    main.cpp
+    main.cpp \
+    server.cpp
 
 HEADERS += \
     users.hpp \
-    server.hpp
+    server.hpp \
+    session.hpp \
+    alias.hpp

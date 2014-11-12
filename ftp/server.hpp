@@ -1,46 +1,9 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <cstdlib>
-#include <iostream>
-#include <thread>
-#include <utility>
-#include <boost/asio.hpp>
+#include "alias.hpp"
 
 namespace fs {
-
-using Tcp           =   boost::asio::ip::tcp;
-using Acceptor      =   Tcp::acceptor;
-using Io_service    =   boost::asio::io_service;
-
-const int max_length = 1024;
-
-void session(Tcp::socket soc)
-{
-    try
-    {
-        while(true)
-        {
-            char data[max_length];
-
-            boost::system::error_code error;
-            size_t length = soc.read_some(boost::asio::buffer(data), error);
-
-            if (error == boost::asio::error::eof)
-                break; // Connection closed cleanly by peer.
-            else if (error)
-                throw boost::system::system_error(error); // Some other error.
-
-            std::cout << ">from client : " << data << std::endl;
-
-            boost::asio::write(soc, boost::asio::buffer(data, length));
-        }
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << ">exception in thread: " << e.what() << "\n";
-    }
-}
 
 class Server
 {
@@ -58,18 +21,7 @@ private:
     Io_service io_service_;
     Acceptor acceptor_;
 
-    void run()
-    {
-        std::cout << ">server is running" << std::endl;
-        while(true)
-        {
-            Tcp::socket soc(io_service_);
-            acceptor_.accept(soc);
-
-            std::cout << ">new session established" << std::endl;
-            std::thread(session, std::move(soc)).detach();
-        }
-    }
+    void run();
 };
 
 }//namespace

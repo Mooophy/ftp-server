@@ -16,13 +16,11 @@ class Users
 public:
     using Dictionary = std::unordered_map<std::string, std::string>;
 
-    Users() = default;
-
     /**
      * @brief Ctor
      * @param filename
      */
-    explicit Users(const std::string& filename):
+    explicit Users(const std::string& filename = "users"):
         data_{}
     {
         std::ifstream ifs{filename};
@@ -34,6 +32,7 @@ public:
     {
         for(const auto& user : data_)
             std::cout << user.first << " " << user.second << std::endl;
+
         return std::cout;
     }
 
