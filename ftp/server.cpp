@@ -11,7 +11,12 @@ void fs::Server::run()
         acceptor_.accept(soc);
         std::cout << ">new session established" << std::endl;
 
-        Session session{std::move(soc)};
-        std::thread{std::move(session)}.detach();
+        make_new_session(std::move(soc));
     }
+}
+
+void fs::Server::make_new_session(Tcp::socket&& soc)const
+{
+    auto t = std::thread{ Session{std::move(soc)} };
+    t.detach();
 }

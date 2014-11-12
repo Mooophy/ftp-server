@@ -22,6 +22,7 @@ private:
     Acceptor acceptor_;
 
     void run();
+    void make_new_session(Tcp::socket&& soc)const;
 };
 
 }//namespace
