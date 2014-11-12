@@ -1,6 +1,7 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
+#include <iostream>
 #include <string>
 #include <assert.h>
 
@@ -44,6 +45,14 @@ private:
         for(++ch;   *ch != '\r';    ++ch)   argt_.push_back(*ch);
     }
 };
+
+inline std::ostream&
+operator <<(std::ostream& os, const Command& c)
+{
+    os << "[" << c.code()       << "]"
+       << "[" << c.argument()   << "]";
+    return os;
+}
 }//namespace
 
 #endif // COMMAND_HPP
@@ -55,9 +64,8 @@ private:
 //int main()
 //{
 //    fs::Command cmd{"SYST ba1234\r\n",13};
-//    std::cout << cmd.code() << std::endl << cmd.argument() << std::endl;
+//    std::cout << cmd;
 //    return 0;
 //}
 //! @output
-//SYST
-//ba1234
+//[SYST][ba1234]
