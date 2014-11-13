@@ -30,6 +30,8 @@ private:
 
     void do_session();
     Command read();
+    void write(const std::string& response);
+    bool prompt_and_check_password();
 };
 }//namespace
 

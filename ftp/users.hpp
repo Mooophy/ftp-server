@@ -42,7 +42,7 @@ public:
     }
 
     /**
-     * @brief check if username with password
+     * @brief check username with password
      * @param un    username
      * @param pwd   password
      * @return  bool
