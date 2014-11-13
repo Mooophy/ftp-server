@@ -9,13 +9,16 @@ void fs::Session::do_session()
         if(!prompt_and_check_password())    return;
 
         write("230 User logged in.\r\n");
-        for(auto cmd = read(); cmd != "err" && cmd!="QUIT"; cmd = read())
+        for(auto cmd = read();/*  */; cmd = read())
         {
-            if(cmd == "QUIT")   return;
+            if(cmd == "QUIT")
+            {
+                write("211 Bye.\r\n");          break;
+            }
 
             if(cmd == "SYST")
             {
-                write("215 Ubuntu 14.04\r\n"); continue;
+                write("215 Ubuntu 14.04\r\n");  continue;
             }
         }
     }
