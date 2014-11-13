@@ -2,7 +2,6 @@
 #define SESSION_HPP
 
 #include "alias_for_boost.hpp"
-#include "users.hpp"
 #include "command.hpp"
 
 namespace fs {
@@ -14,7 +13,6 @@ class Session
 public:
 
     explicit Session(Tcp::socket soc):
-        all_users_{},
         socket_{std::move(soc)}
     {}
 
@@ -24,7 +22,6 @@ public:
     }
 
 private:
-    fs::Users all_users_;
     Tcp::socket socket_;
 
     void do_session();
