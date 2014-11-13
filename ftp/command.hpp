@@ -16,12 +16,17 @@ public:
 
     Command() = delete;
 
-    Command(const char* msg, std::size_t len)
+    Command(const char* msg, std::size_t len):
+        code_{},argt_{}
     {
-        assert(msg);
-        assert(len > 2);    //at least "\r\n"
+        len -= 2;   //remove "\r\n"
 
-        parse_and_init(msg);
+        unsigned idx=0;
+        for(    ; idx!=len && !std::isspace(msg[idx]); ++idx)
+            code_.push_back(msg[idx]);
+
+        if(idx<len)
+            for(++idx;  idx!=len;   ++idx)  argt_.push_back(msg[idx]);
     }
 
     const std::string& code()const
@@ -37,14 +42,27 @@ public:
 private:
     std::string code_;
     std::string argt_;
-
-    void parse_and_init(const char* msg)
-    {
-        auto ch = msg;
-        for(;       *ch != ' ';     ++ch)   code_.push_back(*ch);
-        for(++ch;   *ch != '\r';    ++ch)   argt_.push_back(*ch);
-    }
 };
+
+inline bool operator !=(const Command& lhs, const std::string& rhs)
+{
+    return lhs.code() != rhs;
+}
+
+inline bool operator !=(const std::string& lhs, const Command& rhs)
+{
+    return lhs != rhs.code();
+}
+
+inline bool operator ==(const Command& lhs, const std::string& rhs)
+{
+    return lhs.code() == rhs;
+}
+
+inline bool operator ==(const std::string& lhs, const Command& rhs)
+{
+    return lhs == rhs.code();
+}
 
 inline std::ostream&
 operator <<(std::ostream& os, const Command& c)
