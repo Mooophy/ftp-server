@@ -8,13 +8,6 @@ void fs::Session::do_session()
     try
     {
         std::string prompt{"220 welcome to Yue Wang's FTP site\r\n"};
-        write(socket_, boost::asio::buffer(prompt));
-        std::string user{read().argument()};
-        std::cout << user << std::endl;
-
-        write(socket_, boost::asio::buffer("331  password please\r\n"));
-        std::string pwd{read().argument()};
-        std::cout << pwd  << std::endl;
 
         while(1);   //mark : stopped here -->commands table
 
