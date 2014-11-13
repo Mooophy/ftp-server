@@ -17,6 +17,6 @@ void fs::Server::run()
 
 void fs::Server::make_new_session(Tcp::socket&& soc)const
 {
-    auto t = std::thread{ Session{std::move(soc)} };
+    auto t = std::thread{ Session{std::move(soc), user_table_} };
     t.detach();
 }
