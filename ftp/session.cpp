@@ -16,7 +16,7 @@ void fs::Session::do_session()
         std::string pwd{read().argument()};
         std::cout << pwd  << std::endl;
 
-        while(1);
+        while(1);   //mark : stopped here -->commands table
 
         while(true)
         {
