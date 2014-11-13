@@ -30,7 +30,6 @@ private:
 
     void do_session();
     Command read();
-
 };
 }//namespace
 
