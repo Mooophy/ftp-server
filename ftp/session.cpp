@@ -6,11 +6,12 @@ void fs::Session::do_session()
 {
     try
     {
-        if(!prompt_and_check_password())    return;
+        if(!prompt_and_check_password())        return;
 
         write("230 User logged in.\r\n");
         for(auto cmd = read();/*  */; cmd = read())
         {
+
             if(cmd == "QUIT")
             {
                 write("211 Bye.\r\n");          break;
@@ -20,6 +21,8 @@ void fs::Session::do_session()
             {
                 write("215 Ubuntu 14.04\r\n");  continue;
             }
+
+            write("502 Command not implemented.\r\n");
         }
     }
     catch (std::exception& e)
