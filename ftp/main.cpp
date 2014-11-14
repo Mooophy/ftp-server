@@ -2,7 +2,8 @@
 
 int main()
 {
-    fs::Server server{1234};
+    fs::Server control{1234};
+
 
     return 0;
 }
