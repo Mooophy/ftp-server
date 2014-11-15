@@ -12,8 +12,11 @@
 
 namespace fs{
 
+class Monitor;
+
 class Server
 {
+    friend class Monitor;
 public:
     using SharedUserTable   =   std::shared_ptr<fs::Users>;
     using SocketsMap        =   std::map<Tcp::endpoint, Tcp::socket>;
@@ -64,13 +67,13 @@ private:
         for(auto& t : threads_vector_)  t.join();
     }
 
-    Lock lock()
+    Lock lock() const
     {
         return Lock{mutex_};
     }
 
     template<typename Printable>
-    std::ostream& print_safely(const Printable& to_print)
+    std::ostream& print_safely(const Printable& to_print) const
     {
         auto this_scope = lock();
         return  std::cout << to_print << std::flush;
@@ -117,6 +120,8 @@ private:
         };
     }
 };
+
+
 
 }//namespace
 #endif // SERVER_HPP
