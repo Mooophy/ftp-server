@@ -7,6 +7,7 @@
 #include <mutex>
 #include "alias_for_boost.hpp"
 #include "users.hpp"
+#include "session.hpp"
 
 
 namespace fs{
@@ -33,6 +34,7 @@ public:
         threads_vector_{}
     {
         add_thread(make_thread_for_data_acceptor());
+        add_thread(make_thread_for_ctrl_acceptor());
     }
 
     ~Server()
@@ -53,6 +55,7 @@ private:
 
     void add_thread(std::thread&& t)
     {
+        auto this_scope = lock();
         threads_vector_.push_back(std::move(t));
     }
 
@@ -67,26 +70,46 @@ private:
     }
 
     template<typename Printable>
-    std::ostream& print_safely(const Printable& something)
+    std::ostream& print_safely(const Printable& to_print)
     {
         auto this_scope = lock();
-        return    std::cout << something << std::flush;
+        return  std::cout << to_print << std::flush;
+    }
+
+    std::thread make_thread_for_ctrl_acceptor()
+    {
+        return std::thread{
+            [this]{
+                print_safely("waiting for new ctrl connections") << std::endl;
+                for(;;)
+                {
+                    Tcp::socket soc{io_service_};
+                    ctrl_acceptor_.accept(soc); //<--blocking
+                    print_safely ( ">new ctrl socket generated") << std::endl;
+
+                    std::thread new_ctrl_session{
+                        fs::Session{std::move(soc),user_table_}
+                    };
+                    add_thread(std::move(new_ctrl_session));
+                }
+            }
+        };
     }
 
     std::thread make_thread_for_data_acceptor()
     {
-        return std::thread
-        {
+        return std::thread{
             [this]{
                 print_safely("waiting for new data connections") << std::endl;
                 for(;;)
                 {
                     Tcp::socket soc(io_service_);
-                    data_acceptor_.accept(soc);
-                    std::cout << ">new data socket generated" << std::endl;
+                    data_acceptor_.accept(soc); //<--blocking
+                    print_safely ( ">new data socket generated") << std::endl;
 
                     using Element = std::pair<Tcp::endpoint, Tcp::socket>;
-                    data_sockets_->insert(std::move(Element({soc.remote_endpoint(), std::move(soc)})));
+                    Element elem{soc.remote_endpoint(), std::move(soc)};
+                    data_sockets_->insert(std::move(elem));
                 }
             }
         };
