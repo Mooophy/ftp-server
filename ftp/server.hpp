@@ -14,10 +14,11 @@ namespace fs{
 class Server
 {
 public:
-    using SharedUserTable = std::shared_ptr<fs::Users>;
-    using SocketsMap = std::map<Tcp::endpoint, Tcp::socket>;
-    using SharedSocketsMap = std::shared_ptr<SocketsMap>;
-    using ThreadVector = std::vector<std::thread>;
+    using SharedUserTable   =   std::shared_ptr<fs::Users>;
+    using SocketsMap        =   std::map<Tcp::endpoint, Tcp::socket>;
+    using SharedSocketsMap  =   std::shared_ptr<SocketsMap>;
+    using ThreadVector      =   std::vector<std::thread>;
+    using Lock              =   std::unique_lock<std::mutex>;
 
     Server():
         Server(1234,5678)
@@ -38,16 +39,17 @@ public:
     {
         wait_for_all_done();
     }
+
 private:
 
-    static std::mutex m_;
-    SharedUserTable user_table_;
-    Io_service  io_service_;
+    static std::mutex   m_;
+    SharedUserTable     user_table_;
+    Io_service          io_service_;
 
-    Acceptor ctrl_acceptor_;
-    Acceptor data_acceptor_;
-    SharedSocketsMap data_sockets_;
-    ThreadVector threads_vector_;
+    Acceptor            ctrl_acceptor_;
+    Acceptor            data_acceptor_;
+    SharedSocketsMap    data_sockets_;
+    ThreadVector        threads_vector_;
 
     void add_thread(std::thread&& t)
     {
@@ -59,13 +61,25 @@ private:
         for(auto& t : threads_vector_)  t.join();
     }
 
+    Lock lock()
+    {
+        return Lock{m_};
+    }
+
+    template<typename Printable>
+    std::ostream& print_safely(const Printable& something)
+    {
+        auto this_scope = lock();
+        return    std::cout << something << std::flush;
+    }
+
     std::thread make_thread_for_data_acceptor()
     {
-        std::thread t
+        return std::thread
         {
             [this]{
-                std::cout << ">accepting data connections" << std::endl;
-                while(true)
+                print_safely("waiting for new data connections") << std::endl;
+                for(;;)
                 {
                     Tcp::socket soc(io_service_);
                     data_acceptor_.accept(soc);
@@ -76,12 +90,10 @@ private:
                 }
             }
         };
-
-        return t;
     }
 };
 
-std::mutex Server::m_;
+//std::mutex Server::m_;
 
 }//namespace
 #endif // SERVER_HPP
