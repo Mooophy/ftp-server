@@ -44,7 +44,7 @@ public:
 
 private:
 
-    static std::mutex   m_;
+    static std::mutex   mutex_;
     SharedUserTable     user_table_;
     Io_service          io_service_;
 
@@ -66,7 +66,7 @@ private:
 
     Lock lock()
     {
-        return Lock{m_};
+        return Lock{mutex_};
     }
 
     template<typename Printable>
@@ -78,7 +78,8 @@ private:
 
     std::thread make_thread_for_ctrl_acceptor()
     {
-        return std::thread{
+        return std::thread
+        {
             [this]{
                 print_safely("waiting for new ctrl connections") << std::endl;
                 for(;;)
@@ -98,7 +99,8 @@ private:
 
     std::thread make_thread_for_data_acceptor()
     {
-        return std::thread{
+        return std::thread
+        {
             [this]{
                 print_safely("waiting for new data connections") << std::endl;
                 for(;;)
@@ -115,8 +117,6 @@ private:
         };
     }
 };
-
-//std::mutex Server::m_;
 
 }//namespace
 #endif // SERVER_HPP

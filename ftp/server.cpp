@@ -1,3 +1,4 @@
 #include "server.hpp"
 
-std::mutex fs::Server::m_;
+
+std::mutex fs::Server::mutex_;

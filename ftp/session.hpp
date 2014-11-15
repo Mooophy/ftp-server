@@ -4,6 +4,7 @@
 #include "alias_for_boost.hpp"
 #include "users.hpp"
 
+
 namespace fs{
 
 class Session
@@ -18,7 +19,7 @@ public:
 
     void operator ()()
     {
-
+        //not implemented yet.
     }
 
 private:
