@@ -4,6 +4,7 @@
 #include <chrono>
 #include "server.hpp"
 
+
 namespace fs{
 
 class Monitor
@@ -11,7 +12,7 @@ class Monitor
 public:
     Monitor(const Server* s):
         server_{s},
-        this_thread_{   [this]{run();}}
+        this_thread_{   [this]{run();}  }
     {}
 
     void run() const
@@ -32,14 +33,14 @@ private:
     {
         while(server_)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds{1500});
+            std::this_thread::sleep_for(std::chrono::milliseconds{1200});
 
-            std::string info{"threads : ["};
-            info += std::to_string(server_->threads_vector_.size());
-            info += "]   data sockets : [";
-            info += std::to_string(server_->data_sockets_->size());
-            info += "]";
-            server_->print_safely(info) << std::endl;
+            std::string stat{"threads : ["};
+            stat += std::to_string(server_->threads_vector_.size());
+            stat += "]   data sockets : [";
+            stat += std::to_string(server_->data_sockets_->size());
+            stat += "]";
+            server_->print_safely(stat) << std::endl;
         }
     }
 };
