@@ -30,8 +30,14 @@ public:
         data_acceptor_{io_service_, Tcp::endpoint{Tcp::v4(), data_port}},
         data_sockets_{std::make_shared<SocketsMap>()},
         threads_vector_{}
-    {}
+    {
+        add_thread(make_thread_for_data_acceptor());
+    }
 
+    ~Server()
+    {
+        wait_for_all_done();
+    }
 private:
 
     static std::mutex m;
@@ -42,6 +48,37 @@ private:
     Acceptor data_acceptor_;
     SharedSocketsMap data_sockets_;
     ThreadVector threads_vector_;
+
+    void add_thread(std::thread&& t)
+    {
+        threads_vector_.push_back(std::move(t));
+    }
+
+    void wait_for_all_done()
+    {
+        for(auto& t : threads_vector_)  t.join();
+    }
+
+    std::thread make_thread_for_data_acceptor()
+    {
+        std::thread t
+        {
+            [this]{
+                std::cout << ">accepting data connections" << std::endl;
+                while(true)
+                {
+                    Tcp::socket soc(io_service_);
+                    data_acceptor_.accept(soc);
+                    std::cout << ">new data socket generated" << std::endl;
+
+                    using Element = std::pair<Tcp::endpoint, Tcp::socket>;
+                    data_sockets_->insert(std::move(Element({soc.remote_endpoint(), std::move(soc)})));
+                }
+            }
+        };
+
+        return t;
+    }
 };
 
 std::mutex Server::m;
