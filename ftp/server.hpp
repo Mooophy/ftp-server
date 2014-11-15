@@ -12,13 +12,11 @@
 
 namespace fs{
 
-class Monitor;
-
 class Server
 {
     friend class Monitor;
 public:
-    using SharedUserTable   =   std::shared_ptr<fs::Users>;
+    using UserTable         =   fs::Users;
     using SocketsMap        =   std::map<Tcp::endpoint, Tcp::socket>;
     using SharedSocketsMap  =   std::shared_ptr<SocketsMap>;
     using ThreadVector      =   std::vector<std::thread>;
@@ -29,7 +27,7 @@ public:
     {}
 
     Server(unsigned short ctrl_port, unsigned short data_port):
-        user_table_{std::make_shared<fs::Users>("users")},
+        user_table_{"users"},
         io_service_{},
         ctrl_acceptor_{io_service_, Tcp::endpoint{Tcp::v4(), ctrl_port}},
         data_acceptor_{io_service_, Tcp::endpoint{Tcp::v4(), data_port}},
@@ -48,7 +46,7 @@ public:
 private:
 
     static std::mutex   mutex_;
-    SharedUserTable     user_table_;
+    UserTable           user_table_;
     Io_service          io_service_;
 
     Acceptor            ctrl_acceptor_;
@@ -92,7 +90,7 @@ private:
                     print_safely ( ">new ctrl socket generated") << std::endl;
 
                     std::thread new_ctrl_session{
-                        fs::Session{std::move(soc),user_table_}
+                        fs::Session{std::move(soc), &user_table_}
                     };
                     add_thread(std::move(new_ctrl_session));
                 }

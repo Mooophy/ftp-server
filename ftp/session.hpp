@@ -10,9 +10,7 @@ namespace fs{
 class Session
 {
 public:
-    using SharedUserTable = std::shared_ptr<fs::Users>;
-
-    Session(Tcp::socket soc, SharedUserTable users):
+    Session(Tcp::socket soc, const fs::Users* users):
         socket_{std::move(soc)},
         user_table_{users}
     {}
@@ -24,7 +22,7 @@ public:
 
 private:
     Tcp::socket socket_;
-    SharedUserTable user_table_;
+    const fs::Users* user_table_;
 
 };
 
