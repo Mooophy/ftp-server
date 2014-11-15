@@ -16,26 +16,28 @@ class Server
 {
     friend class Monitor;
 public:
-    using UserTable         =   fs::Users;
-    using SocketsMap        =   std::map<Tcp::endpoint, Tcp::socket>;
-    using SharedSocketsMap  =   std::shared_ptr<SocketsMap>;
-    using ThreadVector      =   std::vector<std::thread>;
-    using Lock              =   std::unique_lock<std::mutex>;
+    using UserTable     =   fs::Users;
+    using SocketsMap    =   std::map<Tcp::endpoint, Tcp::socket>;
+    using ThreadVector  =   std::vector<std::thread>;
+    using Lock          =   std::unique_lock<std::mutex>;
+    using SocketElement =   std::pair<Tcp::endpoint, Tcp::socket>;
 
     Server():
         Server(1234,5678)
     {}
 
-    Server(unsigned short ctrl_port, unsigned short data_port):
-        user_table_{"users"},
+    Server(unsigned short ctrl_port,
+           unsigned short data_port,
+           const std::string& fn = "users"):
+        user_table_{fn},
         io_service_{},
         ctrl_acceptor_{io_service_, Tcp::endpoint{Tcp::v4(), ctrl_port}},
         data_acceptor_{io_service_, Tcp::endpoint{Tcp::v4(), data_port}},
-        data_sockets_{std::make_shared<SocketsMap>()},
+        data_sockets_{},
         threads_vector_{}
     {
-        add_thread(make_thread_for_data_acceptor());
-        add_thread(make_thread_for_ctrl_acceptor());
+        add_thread_safely(make_thread_for_data_acceptor());
+        add_thread_safely(make_thread_for_ctrl_acceptor());
     }
 
     ~Server()
@@ -51,19 +53,8 @@ private:
 
     Acceptor            ctrl_acceptor_;
     Acceptor            data_acceptor_;
-    SharedSocketsMap    data_sockets_;
+    SocketsMap          data_sockets_;
     ThreadVector        threads_vector_;
-
-    void add_thread(std::thread&& t)
-    {
-        auto this_scope = lock();
-        threads_vector_.push_back(std::move(t));
-    }
-
-    void wait_for_all_done()
-    {
-        for(auto& t : threads_vector_)  t.join();
-    }
 
     Lock lock() const
     {
@@ -75,6 +66,23 @@ private:
     {
         auto this_scope = lock();
         return  std::cout << to_print << std::flush;
+    }
+
+    void add_thread_safely(std::thread&& t)
+    {
+        auto this_scope = lock();
+        threads_vector_.push_back(std::move(t));
+    }
+
+    void add_socket_safely(SocketElement&& elem)
+    {
+        auto this_scope = lock();
+        data_sockets_.insert(std::move(elem));
+    }
+
+    void wait_for_all_done()
+    {
+        for(auto& t : threads_vector_)  t.join();
     }
 
     std::thread make_thread_for_ctrl_acceptor()
@@ -92,7 +100,7 @@ private:
                     std::thread new_ctrl_session{
                         fs::Session{std::move(soc), &user_table_}
                     };
-                    add_thread(std::move(new_ctrl_session));
+                    add_thread_safely(std::move(new_ctrl_session));
                 }
             }
         };
@@ -110,16 +118,12 @@ private:
                     data_acceptor_.accept(soc); //<--blocking
                     print_safely ( ">new data socket generated") << std::endl;
 
-                    using Element = std::pair<Tcp::endpoint, Tcp::socket>;
-                    Element elem{soc.remote_endpoint(), std::move(soc)};
-                    data_sockets_->insert(std::move(elem));
+                    SocketElement elem{soc.remote_endpoint(), std::move(soc)};
+                    add_socket_safely(std::move(elem));
                 }
             }
         };
     }
-};
-
-
-
+};//class
 }//namespace
 #endif // SERVER_HPP

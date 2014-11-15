@@ -40,7 +40,7 @@ private:
         std::string stat{"threads : ["};
         stat += std::to_string(server_->threads_vector_.size());
         stat += "]   data sockets : [";
-        stat += std::to_string(server_->data_sockets_->size());
+        stat += std::to_string(server_->data_sockets_.size());
         stat += "]\n";
 
         return stat;

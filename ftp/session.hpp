@@ -17,7 +17,7 @@ public:
 
     void operator ()()
     {
-        //not implemented yet.
+        while(1);//not implemented yet.
     }
 
 private:
