@@ -15,11 +15,6 @@ public:
         this_thread_{   [this]{run();}  }
     {}
 
-    void run() const
-    {
-        do_run();
-    }
-
     ~Monitor()
     {
         this_thread_.join();
@@ -29,11 +24,11 @@ private:
     const Server* server_;
     std::thread this_thread_;
 
-    void do_run() const
+    void run() const
     {
         while(server_)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds{1200});
+            std::this_thread::sleep_for(std::chrono::milliseconds{1000});
 
             std::string stat{"threads : ["};
             stat += std::to_string(server_->threads_vector_.size());
