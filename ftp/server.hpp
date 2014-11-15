@@ -40,7 +40,7 @@ public:
     }
 private:
 
-    static std::mutex m;
+    static std::mutex m_;
     SharedUserTable user_table_;
     Io_service  io_service_;
 
@@ -81,7 +81,7 @@ private:
     }
 };
 
-std::mutex Server::m;
+std::mutex Server::m_;
 
 }//namespace
 #endif // SERVER_HPP
