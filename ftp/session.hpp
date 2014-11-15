@@ -17,7 +17,8 @@ public:
 
     void operator ()()
     {
-        while(1);//not implemented yet.
+        boost::asio::write(socket_, boost::asio::buffer("210\r\n"));
+        while(1);
     }
 
 private:
