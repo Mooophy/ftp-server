@@ -97,9 +97,9 @@ private:
                     ctrl_acceptor_.accept(soc); //<--blocking
 
                     std::thread new_ctrl_session{
-                        fs::Session{std::move(soc), &user_table_}
+                        fs::Session{std::move(soc), &user_table_,&mutex_}
                     };
-                    print_safely ( ">new ctrl session generated\n") ;
+                    print_safely ( ">new ctrl session generated");
                     add_thread_safely(std::move(new_ctrl_session));
                 }
             }
