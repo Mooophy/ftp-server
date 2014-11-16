@@ -17,14 +17,17 @@ public:
 
     void operator ()()
     {
-        boost::asio::write(socket_, boost::asio::buffer("210\r\n"));
-        while(1);
+        do_session();
     }
 
 private:
     Tcp::socket socket_;
     const fs::Users* user_table_;
 
+    void do_session()
+    {
+        while(1);
+    }
 };
 
 }//namespace

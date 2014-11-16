@@ -90,16 +90,16 @@ private:
         return std::thread
         {
             [this]{
-                print_safely("waiting for new ctrl connections") << std::endl;
+                print_safely(">waiting for new ctrl connections\n");
                 for(;;)
                 {
                     Tcp::socket soc{io_service_};
                     ctrl_acceptor_.accept(soc); //<--blocking
-                    print_safely ( ">new ctrl socket generated") << std::endl;
 
                     std::thread new_ctrl_session{
                         fs::Session{std::move(soc), &user_table_}
                     };
+                    print_safely ( ">new ctrl session generated\n") ;
                     add_thread_safely(std::move(new_ctrl_session));
                 }
             }
@@ -111,12 +111,12 @@ private:
         return std::thread
         {
             [this]{
-                print_safely("waiting for new data connections") << std::endl;
+                print_safely(">waiting for new data connections\n");
                 for(;;)
                 {
                     Tcp::socket soc(io_service_);
                     data_acceptor_.accept(soc); //<--blocking
-                    print_safely ( ">new data socket generated") << std::endl;
+                    print_safely ( ">new data socket generated\n");
 
                     SocketElement elem{soc.remote_endpoint(), std::move(soc)};
                     add_socket_safely(std::move(elem));
