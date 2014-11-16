@@ -101,7 +101,12 @@ private:
 
                 if(cmd == "PASV")
                 {
-                    write("227 Entering Passive Mode (127,0,0,1,22,46)\r\n)");continue;
+                    write("227 Entering Passive Mode (127,0,0,1,22,46)\r\n");continue;
+                }
+
+                if(cmd == "LIST")
+                {
+                    write("150\r\n");continue;
                 }
 
                 write("502 Command not implemented.\r\n");
