@@ -2,6 +2,7 @@
 #define SESSION_HPP
 
 #include <mutex>
+#include <thread>
 #include "alias_for_boost.hpp"
 #include "users.hpp"
 #include "command.hpp"
@@ -80,7 +81,39 @@ private:
 
     void do_session()
     {
-        while(1);
+        try
+        {
+            if(!prompt_and_check_password())        return;
+
+            write("230 User logged in.\r\n");
+            for(auto cmd = read();/*  */; cmd = read())
+            {
+
+                if(cmd == "QUIT")
+                {
+                    write("211 Bye.\r\n");          break;
+                }
+
+                if(cmd == "SYST")
+                {
+                    write("215 Ubuntu 14.04\r\n");  continue;
+                }
+
+                if(cmd == "PASV")
+                {
+                    write("227 Entering Passive Mode (127,0,0,1,22,46)\r\n)");continue;
+                }
+
+                write("502 Command not implemented.\r\n");
+            }
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << ">exception in thread: " << e.what() << "\n";
+        }
+
+        auto id = std::this_thread::get_id();
+        std::cout << "\n>thread [" << id <<"] exit" << std::endl;
     }
 };
 

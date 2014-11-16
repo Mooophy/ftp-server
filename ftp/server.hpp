@@ -99,7 +99,7 @@ private:
                     std::thread new_ctrl_session{
                         fs::Session{std::move(soc), &user_table_,&mutex_}
                     };
-                    print_safely ( ">new ctrl session generated");
+                    print_safely ( ">new ctrl session generated\n");
                     add_thread_safely(std::move(new_ctrl_session));
                 }
             }
